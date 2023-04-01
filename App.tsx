@@ -1,20 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text } from "react-native";
 
-export default function App() {
+import { NavigationContainer } from "@react-navigation/native";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { persistCache } from "apollo3-cache-persist";
+
+import Portal from "./container/Portal";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const App = () => {
+  const cache = new InMemoryCache();
+  const cacheFix = async () => {
+    await persistCache({
+      cache,
+      storage: AsyncStorage,
+    });
+  };
+  useEffect(() => {
+    cacheFix();
+  }, []);
+
+  const client = new ApolloClient({
+    uri: "http://localhost:4000",
+    cache: new InMemoryCache(),
+  });
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ApolloProvider client={client}>
+      {/* <DatesProvider settings={{ weekendDays: [0, 6] }}> */}
+      <NavigationContainer>
+        <Portal />
+      </NavigationContainer>
+      {/* </DatesProvider> */}
+    </ApolloProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
