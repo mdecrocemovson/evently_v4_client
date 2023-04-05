@@ -65,7 +65,9 @@ const Friend = ({
             fontSize: 12,
             color: "#000000",
           }}
-          onPress={() => addFriend(friend.id)}
+          onPress={() => {
+            if (addFriend) addFriend(friend.id);
+          }}
         >
           Add Friend
         </Button>
@@ -73,7 +75,9 @@ const Friend = ({
       {isSelect && (
         <CheckBox
           checked={selectedFriends.includes(friend.id)}
-          onPress={() => selectFriend(friend.id)}
+          onPress={() => {
+            if (selectFriend) selectFriend(friend.id);
+          }}
         />
       )}
     </View>

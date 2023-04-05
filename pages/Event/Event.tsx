@@ -34,7 +34,7 @@ const Event = ({ route, navigation }: Props) => {
   const activeUser = helpers.useGetActiveUser();
   const storage = getStorage();
 
-  const eventId = route.params.eventId || "clfn9dm2x0003wvi99omlt7pt";
+  const eventId = route.params.eventId || "clfriq9e20000wvy3dp32ifm8";
   const eventStorageRef = ref(
     storage,
     `/files/${eventId}/photos/${randomId()}`

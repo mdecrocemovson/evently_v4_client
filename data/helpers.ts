@@ -38,7 +38,7 @@ export const helpers = {
             activeUser: data.userByEmail,
           },
         });
-        if (shouldRedirect && navigation) navigation.navigate("CreateEvent");
+        if (shouldRedirect && navigation) navigation.navigate("MyFriends");
       },
       onError: (err) => console.log(err, "error setting active user"),
     })[0],

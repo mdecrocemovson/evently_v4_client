@@ -27,7 +27,7 @@ const SignUpIn = ({ navigation }: Props) => {
   const [firebaseUser, firebaseLoading, error] = useAuthState(auth);
 
   const client = useApolloClient();
-  const activeUser = helpers.useGetActiveUser();
+  //   const activeUser = helpers.useGetActiveUser();
 
   const [isSignup, setIsSignup] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -53,9 +53,6 @@ const SignUpIn = ({ navigation }: Props) => {
     navigation as any
   );
 
-  // const [getUser, { loading, data }] = useLazyQuery<GetUserByPhoneQuery>(
-  //   queries.GET_USER_BY_PHONE
-  // );
   const [getUserByEmail, { loading, data }] = useLazyQuery(
     queries.GET_USER_BY_EMAIl
   );

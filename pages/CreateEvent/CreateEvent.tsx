@@ -25,11 +25,9 @@ import Friend from "../../components/Friend/Friend";
 
 export type TFriend = {
   location: string;
-  name: string;
   id: number;
   firstName: string;
   lastName: string;
-  image: any;
   eventAttended: string;
   profilePhoto: ImageSourcePropType;
   isFriend: boolean;
@@ -50,6 +48,8 @@ const CreateEvent = ({ navigation }: Props) => {
   const [uploading, setUploading] = useState(false);
   const storage = getStorage();
   const activeUser = helpers.useGetActiveUser();
+  console.log(activeUser, "activeUser");
+
   const [downloadUrl, setDownloadUrl] = useState("");
   const [event, setEvent] = useState<Event>({
     title: "",
