@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 // import Event from "./pages/Event/Event";
 // import SignUpIn from "./pages/SignUp/SignUpIn";
 // import Events from "./pages/Events/Events";
-// import CreateEvent from "./pages/CreateEvent/CreateEvent";
+import CreateEvent from "../pages/CreateEvent/CreateEvent";
 // import MyFriends from "./pages/MyFriends/MyFriends";
 // import MyFriendsAttended from "./pages/MyFriends/MyFriendsAttended";
 
@@ -18,7 +18,9 @@ import { useNavigation } from "@react-navigation/native";
 
 import { useApolloClient } from "@apollo/client";
 import { View, Text, StyleSheet } from "react-native";
-import Profile from "../components/Profile";
+import Profile from "../pages/Profile/Profile";
+import SignUpIn from "../pages/SignUpIn/SignUpIn";
+import Event from "../pages/Event/Event";
 
 export type RootStackParamList = {
   SignUpIn: undefined;
@@ -56,22 +58,22 @@ const Portal = () => {
         <Loading />
       ) : ( */}
       <Stack.Navigator
-        initialRouteName="Event"
+        initialRouteName="SignUpIn"
         screenOptions={{
           headerShown: false,
         }}
       >
-        {/* <Stack.Screen name="CreateEvent" component={CreateEvent} />
-        <Stack.Screen name="SignUpIn" component={SignUpIn} /> */}
+        <Stack.Screen name="CreateEvent" component={CreateEvent} />
+        <Stack.Screen name="SignUpIn" component={SignUpIn} />
         <Stack.Screen name="Profile" component={Profile} />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Event"
           component={Event}
           initialParams={{ eventId: "clfrii6o60006wvi9g2yn83gn" }}
         />
-        <Stack.Screen name="Events" component={Events} />
-        <Stack.Screen name="MyFriends" component={MyFriends} />
-        <Stack.Screen name="MyFriendsAttended" component={MyFriendsAttended} /> */}
+        {/* <Stack.Screen name="Events" component={Events} /> */}
+        {/* <Stack.Screen name="MyFriends" component={MyFriends} /> */}
+        {/* <Stack.Screen name="MyFriendsAttended" component={MyFriendsAttended} />  */}
       </Stack.Navigator>
       {/* )} */}
     </View>
@@ -82,6 +84,7 @@ const styles = StyleSheet.create({
   app: {
     backgroundColor: "#060606",
     height: "100%",
+    width: "100%",
   },
 });
 export default Portal;

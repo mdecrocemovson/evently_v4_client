@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, Icon, Input } from "@rneui/base";
+import { Button, Input } from "@rneui/base";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import React, { useEffect, useReducer, useState } from "react";
 import {
   View,
@@ -8,20 +9,19 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Touchable,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import Toast from "react-native-root-toast";
 import * as ImagePicker from "expo-image-picker";
 
-import { Avatar } from "react-native-elements";
-import { RootStackParamList } from "../../Portal";
-import EventlyText from "../../components/EventlyText/EventlyText";
+import { RootStackParamList } from "../../container/Portal";
+// import Text from "../../components/Text/Text";
 import { helpers } from "../../data/helpers";
 import { ProfileInput } from "./Profile.styles";
+import { storage } from "../../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Loading/Loading";
+import EventlyText from "../../components/EventlyText/EventlyText";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -30,7 +30,6 @@ const Profile = ({ navigation }: Props) => {
   console.log(activeUser, "activeUser");
   const [uploading, setUploading] = useState(false);
 
-  const storage = getStorage();
   const storageRef = ref(storage, `/files/${activeUser?.firstName}/avatar.png`);
   const [user, setUser] = useState({
     firstName: activeUser?.firstName || "",
@@ -57,7 +56,7 @@ const Profile = ({ navigation }: Props) => {
     });
     setUploading(true);
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       const message2 = result.uri;
       const response = await fetch(message2);
 
@@ -87,33 +86,37 @@ const Profile = ({ navigation }: Props) => {
   return (
     <ScrollView style={styles.profile}>
       <>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={{ width: 50 }}
           onPress={() => {
             console.log("yeet");
           }}
         >
           <Icon
-            containerStyle={{
-              position: "absolute",
-              top: 70,
-              left: 30,
-              borderWidth: 1,
-              borderColor: "rgba(255, 255, 255, 0.4",
-            }}
+            // containerStyle={{
+            //   position: "absolute",
+            //   top: 70,
+            //   left: 30,
+            //   borderWidth: 1,
+            //   borderColor: "rgba(255, 255, 255, 0.4",
+            // }}
             data-name="arrow-left"
             onPress={() => navigation.goBack()}
-            iconStyle={{ color: "#FFFFFF" }}
+            // iconStyle={{ color: "#FFFFFF" }}
             name="arrow-left"
-            type="font-awesome"
+            // type="font-awesome"
           />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => openImage()}
           style={styles.avatarContainer}
         >
           <Image
-            source={{ uri: activeUser?.profilePhoto }}
+            source={{
+              uri:
+                activeUser?.profilePhoto ||
+                "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png",
+            }}
             style={styles.avatar}
           />
         </TouchableOpacity>
@@ -186,14 +189,14 @@ const Profile = ({ navigation }: Props) => {
           onChangeText={(e) => handleChange("location", e)}
           value={user.location}
           label={"Location"}
-          icon={{ name: "location" }}
+          icon={{ name: "place" }}
         />
         <ProfileInput
           onChangeText={(e) => handleChange("bio", e)}
           value={user.bio}
           label={"Bio"}
           multiline
-          icon={{ name: "location" }}
+          icon={{ name: "contact-page" }}
         />
 
         <Button
