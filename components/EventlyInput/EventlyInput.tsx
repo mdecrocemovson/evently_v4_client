@@ -35,7 +35,7 @@ const EventlyInput = ({
         inputStyle={
           contained && {
             height: multiline ? 100 : 54,
-            paddingLeft: 10,
+            // paddingLeft: 10,
             padding: multiline ? 10 : undefined,
             marginTop: 5,
             borderWidth: 0.5,
@@ -46,11 +46,9 @@ const EventlyInput = ({
         style={{ color: "#FFFFFF" }}
         rightIcon={rightIcon}
         label={
-          <>
-            <EventlyText>
-              {iconForInput} {label}
-            </EventlyText>
-          </>
+          <EventlyText>
+            {iconForInput} {label}
+          </EventlyText>
         }
         labelStyle={{ color: "#FFFFFF", marginLeft: 10 }}
         value={value}

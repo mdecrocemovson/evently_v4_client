@@ -126,7 +126,10 @@ const Profile = ({ navigation }: Props) => {
           </EventlyText>
         </View>
         <View style={styles.profileInfo}>
-          <View style={styles.profileInfoBox}>
+          <TouchableOpacity
+            style={styles.profileInfoBox}
+            onPress={(e) => navigation.navigate("Events")}
+          >
             <EventlyText style={styles.profileInfoBoxNumber}>
               {activeUser?.events?.length}
             </EventlyText>
@@ -136,8 +139,9 @@ const Profile = ({ navigation }: Props) => {
             >
               Events Hosted
             </EventlyText>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={(e) => navigation.navigate("MyFriends")}
             style={{
               ...styles.profileInfoBox,
               borderLeftWidth: 1,
@@ -153,8 +157,9 @@ const Profile = ({ navigation }: Props) => {
             >
               Friends
             </EventlyText>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={(e) => navigation.navigate("Events")}
             style={{
               ...styles.profileInfoBox,
               borderLeftWidth: 1,
@@ -168,9 +173,9 @@ const Profile = ({ navigation }: Props) => {
               fontFamily={"cabinCondensedMedium"}
               style={styles.profileInfoBoxLabel}
             >
-              Events Hosted
+              Events Attended
             </EventlyText>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <ProfileInput

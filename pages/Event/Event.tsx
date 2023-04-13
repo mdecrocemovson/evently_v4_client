@@ -25,6 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Event">;
 
 type EventPhoto = {
   url?: string;
+  id: string;
   user?: {
     id?: string;
   };
@@ -117,7 +118,7 @@ const Event = ({ route, navigation }: Props) => {
 
     if (!result.canceled) {
       // @ts-ignore
-      const message2 = result.uri;
+      const message2 = result.assets[0].uri;
       const response = await fetch(message2);
 
       const blob = await response.blob();
@@ -125,6 +126,7 @@ const Event = ({ route, navigation }: Props) => {
         const snapshot = await uploadBytes(eventStorageRef, blob);
         const downloadUrl = await getDownloadURL(snapshot.ref);
         setCurrentPhoto({
+          id: randomId(),
           url: downloadUrl,
           user: { id: activeUser?.id },
         });
@@ -284,15 +286,15 @@ const Event = ({ route, navigation }: Props) => {
             </EventlyText>
           </View>
 
-          <ScrollView
-            horizontal
-            style={{ display: "flex", flexDirection: "row" }}
-          >
-            {attendingResponses &&
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            {attendingResponses && attendingResponses?.length > 0 ? (
               attendingResponses?.map((r: { user: any }) => {
                 return <HorizontalFriend key={r.user.id} friend={r.user} />;
-              })}
-          </ScrollView>
+              })
+            ) : (
+              <EventlyText>No one is attending yet</EventlyText>
+            )}
+          </View>
           <View
             style={{
               ...styles.descriptionContainer,

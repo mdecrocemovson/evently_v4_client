@@ -1,4 +1,6 @@
-import { Button, Icon, Tab, TabView, Text } from "@rneui/base";
+import { Button } from "@rneui/base";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 import { Divider } from "@rneui/themed";
 
 import React, { useEffect, useState } from "react";
@@ -196,22 +198,27 @@ const SignUpIn = ({ navigation }: Props) => {
             />
           );
         })}
-
-      <EventlyInput
-        isPassword={showPassword}
-        label="Password"
-        icon={{ name: "account-circle" }}
-        onChangeText={(e) => setPassword(e)}
-        contained
-        rightIcon={
-          <Icon
-            onPress={(e) => setShowPassword(!showPassword)}
-            iconStyle={{ color: "#FFF" }}
-            containerStyle={styles.rightIcon}
-            name={showPassword ? "visibility" : "visibility-off"}
-          />
-        }
-      />
+      <View style={{ display: "flex", flexDirection: "row" }}>
+        <EventlyInput
+          style={{ width: "100%" }}
+          isPassword={showPassword}
+          label="Password"
+          icon={{ name: "account-circle" }}
+          onChangeText={(e) => setPassword(e)}
+          contained
+        />
+        <Icon
+          size={30}
+          style={{
+            color: "white",
+            position: "absolute",
+            right: 20,
+            top: "45%",
+          }}
+          onPress={(e) => setShowPassword(!showPassword)}
+          name={showPassword ? "lock-open" : "lock"}
+        />
+      </View>
 
       <Button
         buttonStyle={{

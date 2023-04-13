@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
   selectors: {
     flexDirection: "row",
     marginLeft: 10,
+    marginBottom: 15,
   },
   isSelected: {
     borderBottomWidth: 2,

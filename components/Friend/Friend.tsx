@@ -25,6 +25,7 @@ const Friend = ({
   showEventAttended,
   addFriend,
 }: IFriendProps) => {
+  console.log(friend, "friend");
   return (
     <View key={friend.id} style={styles.friend}>
       <View style={styles.friendDetails}>

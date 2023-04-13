@@ -4,10 +4,13 @@ import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { persistCache } from "apollo3-cache-persist";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 import Portal from "./container/Portal";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const App = () => {
   const cache = new InMemoryCache();
@@ -26,13 +29,21 @@ const App = () => {
     cache: new InMemoryCache(),
   });
 
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+    },
+  });
+
   return (
     <ApolloProvider client={client}>
-      {/* <DatesProvider settings={{ weekendDays: [0, 6] }}> */}
-      <NavigationContainer>
-        <Portal />
-      </NavigationContainer>
-      {/* </DatesProvider> */}
+      <ThemeProvider theme={darkTheme}>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <NavigationContainer>
+            <Portal />
+          </NavigationContainer>
+        </LocalizationProvider>
+      </ThemeProvider>
     </ApolloProvider>
   );
 };

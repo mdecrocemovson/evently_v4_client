@@ -66,7 +66,7 @@ const Portal = () => {
         <Loading />
       ) : (
         <Stack.Navigator
-          initialRouteName="Event"
+          initialRouteName="CreateEvent"
           screenOptions={{
             headerShown: false,
           }}

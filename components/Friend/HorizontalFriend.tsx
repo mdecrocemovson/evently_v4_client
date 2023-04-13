@@ -9,6 +9,7 @@ export type HorizontalFriendProps = {
 };
 
 const HorizontalFriend = ({ friend }: HorizontalFriendProps) => {
+  console.log(friend, "friend");
   return (
     <View style={styles.friendContainer} key={friend.id}>
       <Avatar

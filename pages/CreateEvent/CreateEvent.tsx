@@ -1,7 +1,6 @@
 import React, { useReducer, useState } from "react";
 import { View, ScrollView, ImageSourcePropType } from "react-native";
 import { Avatar } from "react-native-elements";
-// import Friend from "../../components/Friend/Friend";
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 import AddPhoto from "../../assets/AddPhoto.png";
@@ -11,7 +10,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { helpers } from "../../data/helpers";
 import { EventlyInput, EventlyText } from "../../components/EventlyComponents";
 import { StyleSheet } from "react-native";
-// import { EventlyDatePicker } from "../../components/DatePicker";
 import {
   BackIcon,
   createEventStyles,
@@ -20,8 +18,10 @@ import {
 } from "../Event/Event.styled";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
-import { Icon } from "@rneui/base";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import Friend from "../../components/Friend/Friend";
+import EventlyDatePicker from "../../components/EventlyDatePicker/EventlyDatePicker";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 export type TFriend = {
   location: string;
@@ -132,7 +132,7 @@ const CreateEvent = ({ navigation }: Props) => {
           Let's Party, {activeUser?.firstName}!
         </EventlyText>
       </View>
-      <View style={{ paddingHorizontal: 10 }}>
+      <View style={{ paddingHorizontal: 20 }}>
         <EventlyInput
           icon={{ name: "badge" }}
           contained
@@ -157,28 +157,32 @@ const CreateEvent = ({ navigation }: Props) => {
 
           <EventlyText>Event Category</EventlyText>
         </View>
-        <DropDownPicker
-          theme="DARK"
-          dropDownContainerStyle={{
-            backgroundColor: "#171717",
-          }}
-          style={{
-            backgroundColor: "black",
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 15,
-          }}
-          textStyle={{ color: "white" }}
-          open={isPickerOpen}
-          value={event.category}
-          items={categories}
-          setOpen={() => setIsPickerOpen(true)}
-          onClose={() => setIsPickerOpen(false)}
-          setValue={(callback) => {
-            setEvent({ ...event, category: callback(event?.category) });
-          }}
-        />
+        <View style={{ padding: 10, zIndex: 1000 }}>
+          <DropDownPicker
+            theme="DARK"
+            dropDownContainerStyle={{
+              backgroundColor: "#171717",
+            }}
+            style={{
+              backgroundColor: "black",
+              flex: 1,
+              alignItems: "center",
+              borderWidth: 0.5,
+              zIndex: 1000,
+              borderColor: "rgba(255, 255, 255, 0.5)",
+              justifyContent: "center",
+            }}
+            textStyle={{ color: "white" }}
+            open={isPickerOpen}
+            value={event.category}
+            items={categories}
+            setOpen={() => setIsPickerOpen(true)}
+            onClose={() => setIsPickerOpen(false)}
+            setValue={(callback) => {
+              setEvent({ ...event, category: callback(event?.category) });
+            }}
+          />
+        </View>
         <ProfileInput
           icon={{ name: "badge" }}
           contained
@@ -189,85 +193,102 @@ const CreateEvent = ({ navigation }: Props) => {
           multiline
           numberOfLines={4}
         />
-        <EventlyText>Start Date</EventlyText>
+        <View style={{ marginHorizontal: 10 }}>
+          <EventlyText>Start Date</EventlyText>
 
-        {/* <EventlyDatePicker
-          date={event?.startDate?.toDate() || new Date()}
-          mode={"datetime"}
-          onChange={(date: moment.MomentInput) =>
-            setEvent({ ...event, startDate: moment(date) })
-          }
-        />
-        <EventlyText style={{ marginTop: 20 }}>End Date</EventlyText>
+          <EventlyDatePicker
+            date={event?.startDate?.toDate()}
+            mode={"datetime"}
+            onChange={(date: moment.MomentInput) =>
+              setEvent({ ...event, startDate: moment(date) })
+            }
+          />
+          <EventlyText style={{ marginTop: 20 }}>End Date</EventlyText>
 
-        <EventlyDatePicker
-          date={event?.endDate?.toDate() || new Date()}
-          mode={"datetime"}
-          onChange={(date: moment.MomentInput) => {
-            setEvent({ ...event, endDate: moment(date) });
-          }}
-        /> */}
-        <EventlyInput
-          icon={{ name: "badge" }}
-          contained
-          style={styles.profileInput}
-          value={event?.location}
-          label="Location"
-          placeholder="Austin, TX"
-          onChangeText={(e) => setEvent({ ...event, location: e })}
-        />
-        <EventlyText
-          style={{ marginBottom: 30, marginTop: 30 }}
-          fontFamily="promptMedium"
-        >
-          Nearby Bars:
-        </EventlyText>
-      </View>
-
-      <EventlyText style={{ fontSize: 16 }} fontFamily="promptMedium">
-        Invite Friends
-      </EventlyText>
-      <View style={styles.friendSection}>
-        {activeUser && activeUser.friends && activeUser?.friends.length > 0 ? (
-          activeUser?.friends.map((f: TFriend) => (
-            <Friend
-              key={f.id}
-              friend={f}
-              isSelect
-              selectedFriends={selectedFriends}
-              selectFriend={selectFriend}
-            />
-          ))
-        ) : (
-          <EventlyText>
-            You don't have any friends yet. Lets go make some!.
-          </EventlyText>
-        )}
-      </View>
-      <InviteButton
-        buttonStyle={createEventStyles.inviteButton}
-        titleStyle={createEventStyles.inviteButtonTitle}
-        onPress={async (e) => {
-          const response = await createEvent({
-            variables: {
-              input: {
-                userId: activeUser?.id || "clehkt6a50002wvxzchshz77g",
-                ...event,
-                privacy: "public",
-                selectedFriends,
-                coverPhoto: downloadUrl,
+          <EventlyDatePicker
+            date={event?.endDate?.toDate() || new Date()}
+            mode={"datetime"}
+            onChange={(date: moment.MomentInput) => {
+              setEvent({ ...event, endDate: moment(date) });
+            }}
+          />
+        </View>
+        <View style={{ margin: 10 }}>
+          <EventlyText>Location</EventlyText>
+          <GooglePlacesAutocomplete
+            placeholder="Location"
+            query={{
+              key: "AIzaSyB5pdpvqViYHldGxN5Y0-24WtVYUMLH8eQ",
+              language: "en", // language of the results
+            }}
+            styles={{
+              textInput: {
+                backgroundColor: "black",
+                color: "white",
+                borderWidth: 0.5,
+                borderColor: "rgba(255, 255, 255, 0.5)",
+                minHeight: 50,
               },
-            },
-          });
-          Toast.show("Event created", {
-            duration: Toast.durations.LONG,
-          });
-          navigation.navigate("Event", {
-            eventId: response.data?.createEvent?.id,
-          });
-        }}
-        title="Create Event"
-      />
+            }}
+            onPress={(data, details = null) =>
+              setEvent({ ...event, location: data.description })
+            }
+            onFail={(error) => console.error(error)}
+            renderDescription={(row) => row.description} // custom description render
+            requestUrl={{
+              url: "https://maps.googleapis.com/maps/api",
+              useOnPlatform: "web",
+            }} // this in only required for use on the web. See https://git.io/JflFv more for details.
+          />
+
+          <View style={styles.friendSection}>
+            <EventlyText style={{ fontSize: 16 }} fontFamily="promptMedium">
+              Invite Friends
+            </EventlyText>
+            {activeUser &&
+            activeUser.friends &&
+            activeUser?.friends.length > 0 ? (
+              activeUser?.friends.map((f: TFriend) => (
+                <Friend
+                  key={f.id}
+                  friend={f.friend}
+                  isSelect
+                  selectedFriends={selectedFriends}
+                  selectFriend={selectFriend}
+                />
+              ))
+            ) : (
+              <EventlyText>
+                You don't have any friends yet. Lets go make some!.
+              </EventlyText>
+            )}
+          </View>
+          <InviteButton
+            buttonStyle={createEventStyles.inviteButton}
+            titleStyle={createEventStyles.inviteButtonTitle}
+            onPress={async (e) => {
+              const response = await createEvent({
+                variables: {
+                  input: {
+                    userId: activeUser?.id || "clehkt6a50002wvxzchshz77g",
+                    ...event,
+                    privacy: "public",
+                    selectedFriends,
+                    coverPhoto: downloadUrl,
+                  },
+                },
+              });
+              Toast.show("Event created", {
+                duration: Toast.durations.LONG,
+              });
+              navigation.navigate("Event", {
+                eventId: response.data?.createEvent?.id,
+              });
+            }}
+            title="Create Event"
+          />
+        </View>
+      </View>
     </ScrollView>
   );
 };
@@ -276,7 +297,7 @@ export default CreateEvent;
 
 export const styles = StyleSheet.create({
   profile: {
-    paddingTop: 10,
+    paddingTop: 30,
     height: "100%",
     backgroundColor: "#060606",
   },
@@ -334,8 +355,8 @@ export const styles = StyleSheet.create({
     color: "#F5F5F5",
   },
   friendSection: {
-    marginTop: 15,
     backgroundColor: "#1E1E1E",
+    marginTop: 20,
   },
   friend: {
     display: "flex",
