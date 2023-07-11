@@ -1,18 +1,28 @@
-import { Icon } from "@rneui/base";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import EventlyText from "../../components/EventlyText/EventlyText";
 import Friend from "../../components/Friend/Friend";
 import { friends } from "../../data/friends";
 import { helpers } from "../../data/helpers";
 import { useApolloClient } from "@apollo/client";
 import { TFriend } from "../CreateEvent/CreateEvent";
+import { useNavigation } from "@react-navigation/native";
+import { LoginManager } from "react-native-fbsdk-next";
+
+// import * as Facebook from "expo-facebook";
 
 const MyFriends = () => {
   const activeUser = helpers.useGetActiveUser();
   const cache = useApolloClient();
-  console.log(cache, "cache??");
-  console.log(activeUser, "activeUser");
+
+  const navigation = useNavigation();
   const [selectedButtonId, setSelectedButtonId] = useState(0);
   const options = [
     {
@@ -25,27 +35,42 @@ const MyFriends = () => {
     },
   ];
 
+  async function logIn() {
+    LoginManager.logInWithPermissions(["public_profile"]).then(
+      function (result) {
+        if (result.isCancelled) {
+          console.log("Login cancelled");
+        } else {
+          console.log(
+            "Login success with permissions: " +
+              result.grantedPermissions.toString()
+          );
+        }
+      },
+      function (error) {
+        console.log("Login fail with error: " + error);
+      }
+    );
+  }
   return (
     <ScrollView style={styles.myFriends}>
       <View style={styles.headerContainer}>
-        <Icon
-          containerStyle={styles.iconContainer}
-          iconStyle={{ color: "#FFFFFF" }}
-          name="arrow-back"
-        />
-        <Icon
-          containerStyle={{
-            position: "absolute",
-            top: 5,
-            right: 30,
-            borderWidth: 1,
-            borderColor: "rgba(255, 255, 255, 0.4",
-          }}
-          iconStyle={{ color: "#FFFFFF" }}
-          name="add"
-        />
+        <View>
+          <Icon size={30} name="arrow-back" color="white" />
+        </View>
 
         <EventlyText style={styles.header}>Friends</EventlyText>
+        <View>
+          <Icon
+            // disabled={!request}
+            onPress={(e) => {
+              logIn();
+            }}
+            size={30}
+            name="add"
+            color="white"
+          />
+        </View>
       </View>
       <View style={styles.categoryButtons}>
         {options.map((option) => (
@@ -76,6 +101,8 @@ const styles = StyleSheet.create({
   myFriends: {
     backgroundColor: "#060606",
     height: "100%",
+    paddingHorizontal: 30,
+    paddingTop: 80,
   },
 
   header: {
@@ -84,7 +111,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     marginTop: 23,
   },
   categoryButtons: {

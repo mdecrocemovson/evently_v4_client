@@ -2,13 +2,15 @@ import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { EventlyText, Loading } from "../../components/EventlyComponents";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   Modal,
+  Image,
   TouchableOpacity,
+  Share,
+  Alert,
 } from "react-native";
-import { Button, Icon, Image } from "@rneui/base";
+import { Button } from "@rneui/base";
 import eventImage from "../../assets/eventImage.png";
 import moment from "moment";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -19,7 +21,8 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { randomId } from "@mantine/hooks";
 import { updateAttendance } from "./Event.helpers";
 import HorizontalFriend from "../../components/Friend/HorizontalFriend";
-// import * as Calendar from "expo-calendar";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { TFriend } from "../CreateEvent/CreateEvent";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Event">;
 
@@ -49,6 +52,7 @@ const Event = ({ route, navigation }: Props) => {
     switch (action.type) {
       case "loadedEvent":
         return { ...action.payload };
+      case "category":
       case "title":
       case "startDate":
       case "location":
@@ -95,7 +99,6 @@ const Event = ({ route, navigation }: Props) => {
           };
         });
       }
-      console.log(sanitizedEventPhotos);
 
       dispatch({
         type: "loadedEvent",
@@ -106,6 +109,8 @@ const Event = ({ route, navigation }: Props) => {
       });
     }
   }, [fetchEventByIdStatus]);
+
+  console.log(state);
 
   const openImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -152,6 +157,8 @@ const Event = ({ route, navigation }: Props) => {
         ),
       };
     }, [state.responses]);
+
+  console.log(attendingResponses, "attendingResponses");
 
   const savePhoto = () => {
     dispatch({
@@ -205,19 +212,70 @@ const Event = ({ route, navigation }: Props) => {
     // }
   };
 
+  const shareEvent = async () => {
+    console.log("sharing??");
+    try {
+      const result = await Share.share({
+        title: "Check out this great event on Evently!",
+        message: state.title,
+        url: "https://dev.to/urakymzhan/react-native-simulator-debugging-shortcut-4d27",
+      });
+      console.log(result, "result");
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (err: any) {
+      // better alert
+      Alert.alert(err.message);
+    }
+  };
+
+  const inviteFriendUser: TFriend = {
+    firstName: "Invite More Friends!",
+    profilePhoto: "https://i.imgur.com/7k12EPD.png",
+    location: "",
+    id: 1,
+    lastName: "",
+    eventAttended: "",
+    isFriend: false,
+  };
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.event}>
       {fetchEventByIdStatus.loading ? (
         <Loading />
       ) : (
-        <>
+        <View>
           <View>
+            <Icon
+              onPress={(e) => navigation.goBack()}
+              style={{ position: "absolute", top: 70, left: 20, zIndex: 1000 }}
+              name="arrow-back"
+              size={25}
+              color="white"
+            />
+            <Icon
+              onPress={() => shareEvent()}
+              style={{ position: "absolute", top: 70, right: 20, zIndex: 1000 }}
+              name="ios-share"
+              size={25}
+              color="white"
+            />
             <Image
+              // containerStyle={{ backgroundColor: "black" }}
               // onPress={() => openImage()}
-              source={state.coverPhoto || eventImage}
+              source={{ uri: state.coverPhoto }}
               style={styles.image}
             />
-            <View style={{ position: "absolute", bottom: 10 }}>
+            <View
+              style={{ position: "absolute", bottom: 10, right: 10, left: 10 }}
+            >
               <EventlyText style={{ fontSize: 18 }}>
                 {state.title || "No Title"}
               </EventlyText>
@@ -226,12 +284,6 @@ const Event = ({ route, navigation }: Props) => {
                 {moment(state.startDate)?.format("hh:mma")}
               </EventlyText>
               <EventlyText>
-                <EventlyText
-                  fontFamily="cabinCondensedMedium"
-                  style={{ opacity: 0.6, fontSize: 12 }}
-                >
-                  {state.location}
-                </EventlyText>{" "}
                 <EventlyText style={styles.attendanceText}>
                   Going: {attendingResponses?.length}
                 </EventlyText>{" "}
@@ -246,127 +298,181 @@ const Event = ({ route, navigation }: Props) => {
                 {state?.location}
               </EventlyText>
             </View>
+            <View
+              style={{
+                position: "absolute",
+                bottom: 10,
+                right: 20,
+                backgroundColor: "black",
+                borderRadius: 30,
+              }}
+            >
+              <Button
+                buttonStyle={{
+                  backgroundColor: "black",
+                  borderRadius: 30,
+                  width: 65,
+                }}
+              >
+                <EventlyText>
+                  {state.category?.charAt(0).toUpperCase() +
+                    state.category?.slice(1)}
+                </EventlyText>
+              </Button>
+            </View>
           </View>
-          <View style={{ marginBottom: 10 }}>
+          <View style={styles.bottomSection}>
+            <View style={{ marginBottom: 10 }}>
+              <View style={styles.descriptionContainer}>
+                <EventlyText
+                  style={{ fontSize: 16 }}
+                  fontFamily="promptSemiBold"
+                >
+                  Description
+                </EventlyText>
+                <TouchableOpacity onPress={(e) => addEventToCalendar()}>
+                  <EventlyText
+                    style={{
+                      ...styles.linkText,
+                      textDecorationLine: "underline",
+                    }}
+                  >
+                    <Icon
+                      style={{ ...styles.linkText, marginRight: 2 }}
+                      name="event"
+                    />
+                    Add To Calendar
+                  </EventlyText>
+                </TouchableOpacity>
+              </View>
+              <EventlyText
+                style={{ opacity: 0.7 }}
+                fontFamily="cabinCondensedMedium"
+              >
+                {state.description || "No Description"}
+              </EventlyText>
+            </View>
             <View style={styles.descriptionContainer}>
               <EventlyText style={{ fontSize: 16 }} fontFamily="promptSemiBold">
-                Description
+                People Attending
               </EventlyText>
-              <TouchableOpacity onPress={(e) => addEventToCalendar()}>
-                <EventlyText
-                  style={{
-                    ...styles.linkText,
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  <Icon
-                    iconStyle={{ ...styles.linkText, marginRight: 2 }}
-                    name="event"
-                  />
-                  Add To Calendar
-                </EventlyText>
-              </TouchableOpacity>
+              <EventlyText
+                fontFamily="promptSemiBold"
+                style={{ ...styles.linkText, marginTop: 5 }}
+              >
+                {attendingResponses?.length} Attending
+              </EventlyText>
             </View>
-            <EventlyText
-              style={{ opacity: 0.7 }}
-              fontFamily="cabinCondensedMedium"
-            >
-              {state.description || "No Description"}
-            </EventlyText>
-          </View>
-          <View style={styles.descriptionContainer}>
-            <EventlyText style={{ fontSize: 16 }} fontFamily="promptSemiBold">
-              People Attending
-            </EventlyText>
-            <EventlyText
-              fontFamily="promptSemiBold"
-              style={{ ...styles.linkText, marginTop: 5 }}
-            >
-              {attendingResponses?.length} Attending
-            </EventlyText>
-          </View>
 
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            {attendingResponses && attendingResponses?.length > 0 ? (
-              attendingResponses?.map((r: { user: any }) => {
-                return <HorizontalFriend key={r.user.id} friend={r.user} />;
-              })
-            ) : (
-              <EventlyText>No one is attending yet</EventlyText>
-            )}
-          </View>
-          <View
-            style={{
-              ...styles.descriptionContainer,
-              marginTop: 10,
-              marginBottom: 0,
-            }}
-          >
-            <EventlyText style={{ fontSize: 16 }} fontFamily="promptSemiBold">
-              Event Photos
-            </EventlyText>
-          </View>
-          <View
-            style={{
-              marginVertical: 20,
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            {state.eventPhotos && state.eventPhotos.length ? (
-              // TODO - add photo type
-              state.eventPhotos.map((photo: any) => (
-                <Image
-                  key={photo.url}
-                  style={{ width: 130, height: 130 }}
-                  source={photo.url}
-                />
-              ))
-            ) : (
-              <EventlyText>No photos yet</EventlyText>
-            )}
-          </View>
+            <View style={{ display: "flex", flexDirection: "row" }}>
+              {attendingResponses && attendingResponses?.length > 0 ? (
+                <>
+                  {attendingResponses?.map((r: { user: any }) => {
+                    return <HorizontalFriend key={r.user.id} friend={r.user} />;
+                  })}
+                  <HorizontalFriend
+                    onPress={() => navigation.navigate("InviteFriends")}
+                    friend={inviteFriendUser}
+                  />
+                </>
+              ) : (
+                <EventlyText>No one is attending yet</EventlyText>
+              )}
+            </View>
+            <View
+              style={{
+                ...styles.descriptionContainer,
+                marginTop: 10,
+                marginBottom: 0,
+              }}
+            >
+              <EventlyText style={{ fontSize: 16 }} fontFamily="promptSemiBold">
+                Event Photos
+              </EventlyText>
+            </View>
+            <View
+              style={{
+                marginVertical: 20,
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              {state.eventPhotos && state.eventPhotos.length ? (
+                // TODO - add photo type
+                state.eventPhotos.map((photo: any) => (
+                  <Image
+                    key={photo.url}
+                    style={{ width: 130, height: 130 }}
+                    source={{ uri: photo.url }}
+                  />
+                ))
+              ) : (
+                <EventlyText>No photos yet</EventlyText>
+              )}
+            </View>
 
-          <Button
-            buttonStyle={{
-              ...styles.attendanceSelector,
-              borderWidth: 1,
-              backgroundColor: "#050505",
-            }}
-            titleStyle={{ color: "#FFFFFF", fontWeight: "500" }}
-            onPress={(e) => openImage()}
-            title="Add new photo"
-          />
-          <View style={{ flexDirection: "row", width: "100%", marginTop: 10 }}>
-            {attendanceOptions.map((option) => (
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                marginTop: 10,
+                justifyContent: "center",
+              }}
+            >
               <Button
-                key={option.attendanceValue}
                 buttonStyle={{
                   ...styles.attendanceSelector,
                   borderWidth: 1,
-                  backgroundColor:
-                    userAttendance === option.attendanceValue
-                      ? "#FFFFFF"
-                      : "#050505",
+                  backgroundColor: "#050505",
                 }}
-                titleStyle={{
-                  fontWeight: "500",
-                  color:
-                    userAttendance === option.attendanceValue
-                      ? "#050505"
-                      : "#FFFFFF",
-                }}
-                onPress={(e) =>
-                  updateAttendance({
-                    ...updateAttendanceProps,
-                    attendance: option.attendanceValue,
-                  })
-                }
-                title={option.title}
+                titleStyle={{ color: "#FFFFFF", fontWeight: "500" }}
+                onPress={(e) => openImage()}
+                title="Add new photo"
               />
-            ))}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                marginTop: 10,
+                justifyContent: "space-between",
+              }}
+            >
+              {attendanceOptions.map((option, index) => (
+                <Button
+                  key={option.attendanceValue}
+                  containerStyle={{
+                    flex: 1,
+                    marginRight:
+                      index !== attendanceOptions.length - 1 ? 10 : 0,
+                  }}
+                  buttonStyle={{
+                    ...styles.attendanceSelector,
+
+                    backgroundColor:
+                      userAttendance === option.attendanceValue
+                        ? "#FFFFFF"
+                        : "#050505",
+                  }}
+                  titleStyle={{
+                    fontWeight: "500",
+                    color:
+                      userAttendance === option.attendanceValue
+                        ? "#050505"
+                        : "#FFFFFF",
+                  }}
+                  onPress={(e) =>
+                    updateAttendance({
+                      ...updateAttendanceProps,
+                      attendance: option.attendanceValue,
+                    })
+                  }
+                  title={option.title}
+                />
+              ))}
+            </View>
           </View>
-        </>
+        </View>
       )}
 
       <Modal
@@ -401,7 +507,8 @@ const Event = ({ route, navigation }: Props) => {
 const styles = StyleSheet.create({
   event: {
     backgroundColor: "#060606",
-    height: "500px",
+    height: "100%",
+    // paddingTop: 20,
   },
   descriptionContainer: {
     flexDirection: "row",
@@ -409,13 +516,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 6,
   },
+  bottomSection: {
+    padding: 10,
+  },
   linkText: {
     color: "#0195A4",
     fontSize: 12,
   },
   image: {
     height: 315,
-    width: 390,
+    width: "100%",
+    resizeMode: "cover",
   },
   attendanceText: {
     fontSize: 12,
@@ -436,11 +547,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   attendanceSelector: {
-    backgroundColor: "#FFFFFF",
     flex: 1,
     height: 54,
-    width: 110,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   centeredView: {
     flex: 1,

@@ -54,7 +54,6 @@ export const mutations = {
         phoneNumber
         firstName
         lastName
-        idealNightOut
         email
       }
     }

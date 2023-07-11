@@ -1,9 +1,14 @@
-import { Button, Icon } from "@rneui/base";
+import { Button } from "@rneui/base";
 import styled from "styled-components/native";
 import { EventlyInput } from "../../components/EventlyComponents";
 import { StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-export const BackIcon = styled(Icon)``;
+export const BackIcon = styled(Icon)`
+  position: absolute;
+  left: 10%;
+  top: 5%;
+`;
 
 export const ProfileInput = styled(EventlyInput)`
   margin-top: 20;

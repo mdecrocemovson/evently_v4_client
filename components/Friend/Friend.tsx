@@ -13,6 +13,7 @@ interface IFriendProps {
   showLocation?: boolean;
   showEventAttended?: boolean;
   addFriend?: (id: number) => void;
+  unselectFriend?: (id: number) => void;
 }
 
 const Friend = ({
@@ -24,6 +25,7 @@ const Friend = ({
   showLocation,
   showEventAttended,
   addFriend,
+  unselectFriend,
 }: IFriendProps) => {
   console.log(friend, "friend");
   return (
@@ -77,7 +79,11 @@ const Friend = ({
         <CheckBox
           checked={selectedFriends.includes(friend.id)}
           onPress={() => {
-            if (selectFriend) selectFriend(friend.id);
+            if (selectFriend && !selectedFriends.includes(friend.id))
+              selectFriend(friend.id);
+            else {
+              unselectFriend(friend.id);
+            }
           }}
         />
       )}

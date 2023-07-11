@@ -22,6 +22,7 @@ import {
   signInWithEmailAndPassword,
 } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { enforceFormat, formatToPhone } from "./phoneNumberFuncs";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignUpIn">;
 
@@ -124,21 +125,27 @@ const SignUpIn = ({ navigation }: Props) => {
     (text: string) =>
       setStateFunc(text);
 
+  console.log(phoneNumber, "phoneNumber");
+
   const signupInputs = [
     {
+      value: firstName,
       label: "First Name",
       onChangeText: setInputState(setFirstName),
     },
     {
+      value: lastName,
       label: "Last Name",
       onChangeText: setInputState(setLastName),
     },
     {
       label: "Phone Number",
+      value: phoneNumber,
       onChangeText: setInputState(setPhoneNumber),
     },
     {
       label: "Email",
+      value: email,
       onChangeText: setInputState(setEmail),
     },
   ];
@@ -146,6 +153,7 @@ const SignUpIn = ({ navigation }: Props) => {
   const loginInputs = [
     {
       label: "Email",
+      value: email,
       onChangeText: setInputState(setEmail),
     },
   ];
@@ -172,7 +180,7 @@ const SignUpIn = ({ navigation }: Props) => {
           <EventlyText fontFamily="promptSemiBold">Sign Up</EventlyText>
         </TouchableOpacity>
       </View>
-      <Divider style={{ marginTop: 4 }} />
+      <Divider style={{ marginTop: 4, marginBottom: 20 }} />
 
       {isSignup &&
         signupInputs.map((input) => {
@@ -195,6 +203,7 @@ const SignUpIn = ({ navigation }: Props) => {
               icon={{ name: "account-circle" }}
               onChangeText={input.onChangeText}
               contained
+              value={input.value}
             />
           );
         })}

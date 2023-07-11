@@ -4,8 +4,12 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  initializeAuth,
 } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
+import { getReactNativePersistence } from "firebase/auth/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { getStorage } from "firebase/storage";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -14,7 +18,7 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCCa5W_c7s7Nb7WAPIPV3aSAX7ehvNWJM4",
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: "evently-331120.firebaseapp.com",
   projectId: "evently-331120",
   storageBucket: "evently-331120.appspot.com",
@@ -30,6 +34,9 @@ if (firebase.getApps.length === 0) {
 } else {
   app = firebase.getApp();
 }
+initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
 
 const auth = getAuth(app);
 const storage = getStorage(app);

@@ -23,7 +23,6 @@ const EventlyInput = ({
   numberOfLines,
   ...props
 }: EventlyInputProps) => {
-  console.log(icon, "icon");
   const iconForInput = <Icon style={styles.icon} name={icon.name} />;
   return (
     <View style={style}>
@@ -34,8 +33,9 @@ const EventlyInput = ({
         inputContainerStyle={{ borderBottomWidth: 0 }}
         inputStyle={
           contained && {
+            fontFamily: "promptMedium",
             height: multiline ? 100 : 54,
-            // paddingLeft: 10,
+            paddingLeft: 10,
             padding: multiline ? 10 : undefined,
             marginTop: 5,
             borderWidth: 0.5,

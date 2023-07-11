@@ -1,20 +1,33 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Avatar, Button, Icon, Image } from "@rneui/base";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import { Avatar, Button, Icon } from "@rneui/base";
 import EventlyText from "../EventlyText/EventlyText";
 import { TFriend } from "../../pages/CreateEvent/CreateEvent";
 
 export type HorizontalFriendProps = {
   friend: TFriend;
+  onPress?: () => void;
 };
 
-const HorizontalFriend = ({ friend }: HorizontalFriendProps) => {
+const HorizontalFriend = ({ friend, onPress }: HorizontalFriendProps) => {
   console.log(friend, "friend");
   return (
-    <View style={styles.friendContainer} key={friend.id}>
-      <Avatar
-        containerStyle={{ width: 54, height: 54, marginBottom: 10 }}
-        source={friend.profilePhoto}
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.friendContainer}
+      key={friend.id}
+    >
+      <Image
+        // containerStyle={{ width: 54, height: 54, marginBottom: 10 }}
+        source={{ uri: friend.profilePhoto }}
+        style={{ width: 54, height: 54, marginBottom: 10 }}
       />
       <EventlyText fontFamily="promptSemiBold">
         {friend.firstName} {friend.lastName}
@@ -30,7 +43,7 @@ const HorizontalFriend = ({ friend }: HorizontalFriendProps) => {
           </View>
         ) : null}
       </EventlyText>
-    </View>
+    </TouchableOpacity>
   );
 };
 

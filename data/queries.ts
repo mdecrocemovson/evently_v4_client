@@ -12,6 +12,7 @@ export const queries = {
           firstName
           lastName
         }
+        category
         location
         coverPhoto
         startDate
@@ -125,6 +126,7 @@ export const queries = {
     query GetEventById($input: EventByIdInput!) {
       eventById(input: $input) {
         id
+        category
         title
         description
         startDate

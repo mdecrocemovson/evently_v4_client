@@ -2,103 +2,33 @@ import moment from "moment";
 import React, { useEffect } from "react";
 import { View, StyleSheet, ImageBackground, ScrollView } from "react-native";
 import { Image as ImageComponent } from "react-native";
-import { Button, Image, Text } from "@rneui/base";
+import { BackgroundImage, Button, Image, Text } from "@rneui/base";
 import EventlyText from "../../components/EventlyText/EventlyText";
-import eventForEvents from "../../assets/EventForEvents1.png";
-import discoverEvent1 from "../../assets/discoverImage.png";
-import discoverEvent2 from "../../assets/discoverImage2.png";
+
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { queries } from "../../data/queries";
 // import { GetEventsByUserIdQuery } from "../../generated/graphql";
 import { helpers } from "../../data/helpers";
+import { discoverEvents, events } from "./eventData";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList, useNavigationProps } from "../../container/Portal";
 
-const eventTypes = [
-  { name: "Music", id: 1 },
-  { name: "Social Party", id: 2 },
-  { name: "Outdoors", id: 3 },
-  { name: "Sports", id: 4 },
-  { name: "Food", id: 5 },
-  { name: "Other", id: 6 },
-];
-
-const events = [
-  {
-    name: "Breeze Music Festival",
-    date: moment(),
-    location: "Hard Rock Stadium",
-    image: eventForEvents,
-
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-  {
-    name: "Recording Academy's 63rd Annual GRAMMY Awards",
-    date: moment(),
-    location: "Los Angeles Convention Center",
-    image: eventForEvents,
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-  {
-    name: "Recording Academy's 63rd Annual GRAMMY Awards",
-    date: moment(),
-    location: "Los Angeles Convention Center",
-    image: eventForEvents,
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-  {
-    name: "Recording Academy's 63rd Annual GRAMMY Awards",
-    date: moment(),
-    location: "Los Angeles Convention Center",
-    image: eventForEvents,
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-];
-
-const discoverEvents = [
-  {
-    name: "Breeze Music Festival",
-    date: moment(),
-    location: "Hard Rock Stadium",
-    image: discoverEvent1,
-
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-  {
-    name: "Recording Academy's 63rd Annual GRAMMY Awards",
-    date: moment(),
-    location: "Los Angeles Convention Center",
-    image: discoverEvent2,
-    attendance: {
-      going: 7,
-      maybe: 4,
-      no: 15,
-    },
-  },
-];
+const eventTypes = {
+  music: "Music",
+  food: "Food",
+  sports: "Sports",
+  arts: "Arts",
+  outdoors: "Outdoors",
+};
 
 const Events = () => {
   const activeUser = helpers.useGetActiveUser();
-  const [selectedEventTypeButton, setSelectedEventTypeButton] =
-    React.useState(0);
+  console.log(activeUser, "activeUser");
+  const navigation = useNavigation<useNavigationProps>();
+  const [selectedEventCategory, setSelectedEventCategory] = React.useState(
+    eventTypes.music
+  );
 
   const useFetchEvents = () =>
     useLazyQuery(queries.GET_EVENTS_BY_USER_ID, {
@@ -116,109 +46,142 @@ const Events = () => {
         },
       });
     }
-  }, []);
+  }, [activeUser]);
+
+  console.log(data, called, "data called");
 
   return (
-    <ScrollView style={styles.container}>
-      <View>
-        {loading ? (
-          <Text>Loading</Text>
-        ) : (
-          <ScrollView horizontal style={{ maxHeight: 350, marginLeft: 20 }}>
-            {data?.eventsByUserId.map((event: any, index: number) => {
-              return (
-                <View style={{ marginRight: 25, width: 250, paddingTop: 10 }}>
-                  <Image source={event.coverPhoto} style={styles.card}>
-                    <View
-                      style={{
-                        position: "relative",
-                        top: 250,
-                      }}
-                    >
-                      <EventlyText
-                        fontFamily={"promptSemiBold"}
-                        style={styles.eventTitle}
-                      >
-                        {event.title} {index}
-                      </EventlyText>
-                      <EventlyText style={styles.eventSubTitle}>
-                        {moment(event.endDate).format("MMMM Do [at] hh:mma")}
-                      </EventlyText>
-                      <EventlyText style={styles.eventLocation}>
-                        {event.location}
-                      </EventlyText>
-                      <EventlyText style={styles.eventAttendance}>
-                        Going {event.responses.going} Maybe{" "}
-                        {event.responses.maybe}
-                      </EventlyText>
-                    </View>
-                  </Image>
-                </View>
-              );
-            })}
-          </ScrollView>
-        )}
-        {events.map((event) => (
-          <Image source={event.image} style={styles.card}>
-            <View style={{ position: "absolute", bottom: 40, left: 20 }}>
-              <EventlyText
-                fontFamily={"promptSemiBold"}
-                style={styles.eventTitle}
-              >
-                {event.name}
-              </EventlyText>
-              <EventlyText style={styles.eventSubTitle}>
-                {event.date.format("MMMM Do [at] hh:mma")}
-              </EventlyText>
-              <EventlyText style={styles.eventLocation}>
-                {event.location}
-              </EventlyText>
-              <EventlyText style={styles.eventAttendance}>
-                Going {event.attendance.going} Maybe {event.attendance.maybe}
-              </EventlyText>
-            </View>
-          </Image>
-        ))}
-      </View>
-      <EventlyText style={styles.exploreEventsCTA}>
-        Explore More Events
-      </EventlyText>
-      <ScrollView style={styles.discoverButtonsContainer} horizontal>
-        {eventTypes.map((e) => (
-          <Button
-            onPress={() => setSelectedEventTypeButton(e.id)}
-            titleStyle={styles.eventTypeButtonTitle}
-            buttonStyle={
-              e.id === selectedEventTypeButton
-                ? selectedButtonStyles
-                : styles.eventTypeButton
-            }
-          >
-            <EventlyText>{e.name}</EventlyText>
-          </Button>
-        ))}
-      </ScrollView>
-      {discoverEvents.map((event) => (
-        <View style={styles.discoverEvent}>
-          <ImageComponent
-            style={styles.discoverEventImage}
-            source={event.image}
-          />
-          <View style={styles.discoverEventTexts}>
-            <EventlyText
-              style={{ ...styles.eventTitle, fontSize: 14 }}
-              fontFamily={"promptSemiBold"}
-            >
-              {event.name}
-            </EventlyText>
-            <EventlyText style={{ ...styles.eventSubTitle, marginTop: 5 }}>
-              {event.date.format("MMM Do[,] hh:mma")}
-            </EventlyText>
-            <EventlyText>{event.location}</EventlyText>
+    <>
+      <ScrollView style={styles.container}>
+        <View
+          style={{
+            paddingTop: 50,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ paddingLeft: 20 }}></View>
+          <View>
+            <EventlyText style={{ fontSize: 24 }}>Evently</EventlyText>
+          </View>
+          <View>
+            <Icon
+              onPress={(e) => navigation.navigate("CreateEvent")}
+              size={30}
+              name="add"
+              color="white"
+            />
           </View>
         </View>
-      ))}
-    </ScrollView>
+
+        <View style={{ paddingTop: 40 }}>
+          <View>
+            {loading ? (
+              <Text>Loading</Text>
+            ) : (
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                style={{ maxHeight: 350, marginLeft: 20 }}
+              >
+                {data?.eventsByUserId.map((event: any, index: number) => {
+                  const goingResponses = event.responses.filter(
+                    (e) => e.response === 1
+                  );
+                  const maybeResponses = event.responses.filter(
+                    (e) => e.response === 2
+                  );
+                  return (
+                    <View style={{ marginRight: 25, paddingTop: 10 }}>
+                      <Image
+                        onPress={() =>
+                          navigation.navigate("Event", { eventId: event.id })
+                        }
+                        source={{ uri: event.coverPhoto }}
+                        style={styles.card}
+                      >
+                        <View
+                          style={{
+                            position: "relative",
+                            top: 230,
+                          }}
+                        >
+                          <EventlyText
+                            fontFamily={"promptSemiBold"}
+                            style={styles.eventTitle}
+                          >
+                            {event.title}
+                          </EventlyText>
+                          <EventlyText style={styles.eventSubTitle}>
+                            {moment(event.endDate).format(
+                              "MMMM Do [at] hh:mma"
+                            )}
+                          </EventlyText>
+                          <EventlyText style={styles.eventLocation}>
+                            {event.location}
+                          </EventlyText>
+                          <EventlyText style={styles.eventAttendance}>
+                            Going {goingResponses.length} Maybe{" "}
+                            {maybeResponses.length}
+                          </EventlyText>
+                        </View>
+                      </Image>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            )}
+          </View>
+          <EventlyText style={styles.exploreEventsCTA}>
+            Explore More Events
+          </EventlyText>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            style={styles.discoverButtonsContainer}
+            horizontal
+          >
+            {Object.values(eventTypes).map((e) => (
+              <Button
+                onPress={() => setSelectedEventCategory(e)}
+                titleStyle={styles.eventTypeButtonTitle}
+                buttonStyle={
+                  e === selectedEventCategory
+                    ? selectedButtonStyles
+                    : styles.eventTypeButton
+                }
+              >
+                <EventlyText>{e}</EventlyText>
+              </Button>
+            ))}
+          </ScrollView>
+          {discoverEvents
+            .filter((e) => e.category === selectedEventCategory)
+            .map((event) => (
+              <View style={styles.discoverEvent}>
+                <ImageComponent
+                  style={styles.discoverEventImage}
+                  source={event.image}
+                />
+                <View style={styles.discoverEventTexts}>
+                  <EventlyText
+                    style={{ ...styles.eventTitle, fontSize: 14 }}
+                    fontFamily={"promptSemiBold"}
+                  >
+                    {event.name}
+                  </EventlyText>
+                  <EventlyText
+                    style={{ ...styles.eventSubTitle, marginTop: 5 }}
+                  >
+                    {event.date.format("MMM Do[,] hh:mma")}
+                  </EventlyText>
+                  <EventlyText>{event.location}</EventlyText>
+                </View>
+              </View>
+            ))}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -257,12 +220,14 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   container: {
+    // paddingTop: 130,
+    paddingHorizontal: 20,
     backgroundColor: "#060606",
     height: "100%",
   },
   card: {
-    height: 350,
-    width: 300,
+    height: 315,
+    width: 270,
     borderRadius: 20,
   },
   eventTitle: {

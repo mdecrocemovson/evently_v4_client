@@ -29,7 +29,7 @@ export type TFriend = {
   firstName: string;
   lastName: string;
   eventAttended: string;
-  profilePhoto: ImageSourcePropType;
+  profilePhoto: string;
   isFriend: boolean;
 };
 
@@ -111,13 +111,13 @@ const CreateEvent = ({ navigation }: Props) => {
   console.log(event, "event");
 
   return (
-    <ScrollView style={styles.profile}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.profile}>
       <BackIcon
+        size={25}
+        color="white"
+        style={{ zIndex: 1000 }}
         onPress={() => navigation.goBack()}
-        containerStyle={createEventStyles.backIcon}
-        iconStyle={{ color: "white" }}
-        name="arrow-left"
-        type="font-awesome"
+        name="arrow-back"
       />
       <View style={styles.avatarContainer}>
         <Avatar
@@ -157,7 +157,7 @@ const CreateEvent = ({ navigation }: Props) => {
 
           <EventlyText>Event Category</EventlyText>
         </View>
-        <View style={{ padding: 10, zIndex: 1000 }}>
+        <View style={{ padding: 10 }}>
           <DropDownPicker
             theme="DARK"
             dropDownContainerStyle={{
@@ -218,7 +218,7 @@ const CreateEvent = ({ navigation }: Props) => {
           <GooglePlacesAutocomplete
             placeholder="Location"
             query={{
-              key: "AIzaSyB5pdpvqViYHldGxN5Y0-24WtVYUMLH8eQ",
+              key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
               language: "en", // language of the results
             }}
             styles={{
@@ -248,9 +248,9 @@ const CreateEvent = ({ navigation }: Props) => {
             {activeUser &&
             activeUser.friends &&
             activeUser?.friends.length > 0 ? (
-              activeUser?.friends.map((f: TFriend) => (
+              activeUser?.friends.map((f: { friend: TFriend }) => (
                 <Friend
-                  key={f.id}
+                  key={f.friend.id}
                   friend={f.friend}
                   isSelect
                   selectedFriends={selectedFriends}

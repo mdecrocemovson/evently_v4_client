@@ -22,10 +22,13 @@ import { storage } from "../../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import Loading from "../../components/Loading/Loading";
 import EventlyText from "../../components/EventlyText/EventlyText";
+import { getAuth, signOut } from "firebase/auth";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 const Profile = ({ navigation }: Props) => {
+  const auth = getAuth();
+
   const activeUser = helpers.useGetActiveUser();
   console.log(activeUser, "activeUser");
   const [uploading, setUploading] = useState(false);
@@ -232,6 +235,26 @@ const Profile = ({ navigation }: Props) => {
             });
           }}
           title="Save"
+        />
+        <Button
+          buttonStyle={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
+            height: 54,
+            marginBottom: 10,
+            marginHorizontal: 33,
+          }}
+          titleStyle={{ color: "#000000", fontWeight: "500" }}
+          onPress={async () => {
+            await signOut(auth)
+              .then(() => {
+                // Sign-out successful.
+              })
+              .catch((error) => {
+                // An error happened.
+              });
+          }}
+          title="Sign Out"
         />
       </>
     </ScrollView>

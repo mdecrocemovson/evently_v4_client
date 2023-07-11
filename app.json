@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "evently_v4_client",
-    "slug": "evently_v4_client",
+    "name": "Evently",
+    "slug": "Evently",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,11 +11,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mdecrocemovson.Evently"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +24,27 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "58ea93da-de47-46d8-86bf-6e35ff0b78e2"
+      }
+    },
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "254789847069607",
+          "displayName": "Evently",
+          "clientToken": "bada680e9143721073a44ff4d25598a7",
+          "scheme": "eventlyfb",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": false,
+          "isAutoInitEnabled": true,
+          "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ],
+    "scheme": "eventlyfb"
   }
 }
